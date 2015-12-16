@@ -9,7 +9,7 @@
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Класс для минимизация перед выводом в браузер
+ * Класс для минимизации перед выводом в браузер
  */
 class Compress {
   /**
