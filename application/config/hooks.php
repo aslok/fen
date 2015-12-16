@@ -10,7 +10,11 @@
 |
 */
 
-
+$hook['display_override'] =
+  array('class' => 'Compress',
+        'function' => 'output',
+        'filename' => 'compress.php',
+        'filepath' => 'hooks');
 
 /* End of file hooks.php */
 /* Location: ./application/config/hooks.php */
