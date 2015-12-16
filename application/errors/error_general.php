@@ -1,4 +1,14 @@
-<!DOCTYPE html>
+<?php
+
+/**
+ * Файл errors/error_general
+ *
+ * Шаблон для вывода системных ошибок
+ * @errors
+ */
+if(!defined('BASEPATH')) exit('No direct script access allowed');
+
+?><!DOCTYPE html>
 <html lang="en">
 <head>
 <title>Error</title>

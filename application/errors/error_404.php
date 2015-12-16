@@ -1,4 +1,14 @@
-<!DOCTYPE html>
+<?php
+
+/**
+ * Файл errors/error_404
+ *
+ * Шаблон для вывода ошибок "страница не найдена"
+ * @errors
+ */
+if(!defined('BASEPATH')) exit('No direct script access allowed');
+
+?><!DOCTYPE html>
 <html lang="en">
 <head>
 <title>404 Page Not Found</title>

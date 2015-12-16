@@ -1,12 +1,15 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-/*
-| -------------------------------------------------------------------
-| MIME TYPES
-| -------------------------------------------------------------------
-| This file contains an array of mime types.  It is used by the
-| Upload class to help identify allowed file types.
-|
-*/
+<?php
+
+/**
+ * Файл config/mimes
+ *
+ * MIME TYPES
+ *
+ * This file contains an array of mime types.  It is used by the
+ * Upload class to help identify allowed file types.
+ * @config
+ */
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 $mimes = array(	'hqx'	=>	'application/mac-binhex40',
 				'cpt'	=>	'application/mac-compactpro',

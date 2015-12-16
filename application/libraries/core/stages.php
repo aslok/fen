@@ -25,7 +25,7 @@ class stages {
 
   /** @var int Текущий уровень выполнения */
   public $n;
-  /** @var \CI_Controller Объект для доступа к ресурсам Codeigniter */
+  /** @var object CI_Controller Объект для доступа к ресурсам Codeigniter */
   private $ci;
 
   /**

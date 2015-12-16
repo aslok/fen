@@ -8,8 +8,12 @@
  */
 if(!defined('BASEPATH')) exit('No direct script access allowed');
 
+/**
+ * Класс реализует тестовые функции
+ * @test
+ */
 class test {
-  /** @var \CI_Controller Объект для доступа к ресурсам Codeigniter */
+  /** @var object CI_Controller Объект для доступа к ресурсам Codeigniter */
   private $ci;
 
   /**

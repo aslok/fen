@@ -1,4 +1,12 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+/**
+ * Файл config/config
+ *
+ * Главный файл настройки CodeIgniter
+ * @config
+ */
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /*
 |--------------------------------------------------------------------------

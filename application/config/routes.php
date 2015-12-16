@@ -1,10 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+/**
+ * Файл config/routes
+ *
+ * URI ROUTING
+ *
+ * This file lets you re-map URI requests to specific controller functions.
+ * @config
+ */
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
 /*
-| -------------------------------------------------------------------------
-| URI ROUTING
-| -------------------------------------------------------------------------
-| This file lets you re-map URI requests to specific controller functions.
-|
 | Typically there is a one-to-one relationship between a URL string
 | and its corresponding controller class/method. The segments in a
 | URL normally follow this pattern:

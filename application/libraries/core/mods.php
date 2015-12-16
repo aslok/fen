@@ -19,7 +19,7 @@ if(!defined('BASEPATH')) exit('No direct script access allowed');
  */
 class mods {
 
-  /** @var \CI_Controller Объект для доступа к ресурсам Codeigniter */
+  /** @var object CI_Controller Объект для доступа к ресурсам Codeigniter */
   private $ci;
 
   /** @var array Массив модулей доступных для загрузки */
@@ -107,6 +107,7 @@ class mods {
    * Ищет в $this->arr и загружает модуль
    *
    * @param string $module Название модуля который необходимо загрузить
+   * @param string $method Название метода модуля который необходимо запустить после загрузки модуля
    * @return bool|mixed Результат загрузки
    *    или результат выполнения стартового метода
    */

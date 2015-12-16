@@ -1,10 +1,19 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed');
+<?php
+
+/**
+ * Файл config/migrations
+ *
+ * Файл настройки миграции
+ * @config
+ */
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
 /*
 |--------------------------------------------------------------------------
 | Enable/Disable Migrations
 |--------------------------------------------------------------------------
 |
-| Migrations are disabled by default but should be enabled 
+| Migrations are disabled by default but should be enabled
 | whenever you intend to do a schema migration.
 |
 */

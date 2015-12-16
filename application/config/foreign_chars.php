@@ -1,12 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-/*
-| -------------------------------------------------------------------
-| Foreign Characters
-| -------------------------------------------------------------------
-| This file contains an array of foreign characters for transliteration
-| conversion used by the Text helper
-|
-*/
+<?php
+
+/**
+ * Файл config/foreign_chars
+ *
+ * Foreign Characters
+ *
+ * This file contains an array of foreign characters for transliteration
+ * conversion used by the Text helper
+ * @config
+ */
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
 $foreign_characters = array(
 	'/ä|æ|ǽ/' => 'ae',
 	'/ö|œ/' => 'oe',

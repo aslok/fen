@@ -1,4 +1,14 @@
-<!DOCTYPE html>
+<?php
+
+/**
+ * Файл errors/error_db
+ *
+ * Шаблон для вывода ошибок базы данных
+ * @errors
+ */
+if(!defined('BASEPATH')) exit('No direct script access allowed');
+
+?><!DOCTYPE html>
 <html lang="en">
 <head>
 <title>Database Error</title>

@@ -23,7 +23,7 @@ class sessions {
   /** @var string Хеш код сохраненных данных, для проверки,
    *    что они изменились и нужно сохранить снова */
   private $arr_md5;
-  /** @var \CI_Controller Объект для доступа к ресурсам Codeigniter */
+  /** @var object CI_Controller Объект для доступа к ресурсам Codeigniter */
   private $ci;
 
   /**
