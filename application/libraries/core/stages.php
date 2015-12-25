@@ -211,7 +211,7 @@ class stages {
         show_error('Module ' . $perms_mod . ' is not loaded');
       }
       $vars = get_object_vars($this->ci->$perms_mod);
-      return $this->check_perms_req($vars, $parms);
+      return $this->array_diff_only_exists_vals($vars, $parms);
     }
     return TRUE;
   }
@@ -226,13 +226,13 @@ class stages {
    * @param array $parms Контрольный массив с значениями для проверки
    * @return boolean В случае отсутствия разницы возвращает TRUE
    */
-  private function check_perms_req($vars, $parms) {
+  public function array_diff_only_exists_vals($vars, $parms) {
     foreach($parms as $parm_key => $parm) {
       if(!isset($vars[$parm_key])) {
         show_error('Property ' . $parm_key . ' is not exists');
       }
       if(is_array($parm) && is_array($vars[$parm_key])) {
-        return $this->check_perms_req($vars[$parm_key], $parms[$parm_key]);
+        return $this->array_diff_only_exists_vals($vars[$parm_key], $parms[$parm_key]);
       }elseif(is_array($parm)) {
         return FALSE;
       }elseif($vars[$parm_key] !== $parm) {

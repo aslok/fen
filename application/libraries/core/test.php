@@ -16,12 +16,20 @@ class test {
   /** @var object CI_Controller Объект для доступа к ресурсам Codeigniter */
   private $ci;
 
+  public $route;
+  public $get;
+
   /**
    * Инициализация свойств класса
    * @return object
    */
   public function __construct() {
     $this->ci = & get_instance();
+    $this->route = array ('lang' => array ('en', 'ua', 'ru'),
+                          'section' => array ('main', 'admin'),
+                          'page' => FALSE,
+                          'action' => FALSE);
+    $this->get = array ('lang' => 'ru', 'section' => 'main', 'params' => array ());
   }
 
   /**
@@ -29,6 +37,6 @@ class test {
    * @return void
    */
   function done(){
-    var_dump('<pre>', $this->ci->mods->arr, $this->ci->mods->loaded);
+    var_dump('<pre>', $this->ci->mods->arr, $this->ci->mods->loaded, $this->ci->in->routes, $this->get);
   }
 }
