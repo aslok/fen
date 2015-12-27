@@ -55,9 +55,9 @@ class in {
    */
   public function ready() {
     // Получаем GET параметры модулей и списки значений параметров
-    $modules_routes = $this->ci->stages->get('route', array(), 'property');
+    $modules_routes = $this->ci->all->get('route', array(), 'property');
     // Получаем значения по-умолчанию
-    $modules_gets = $this->ci->stages->get('get', array(), 'property');
+    $modules_gets = $this->ci->all->get('get', array(), 'property');
     // Обогощаем GET параметры модулей именами параметров указанных
     // в массиве значений по-умолчанию
     foreach ($modules_gets as $module => $module_section) {
@@ -158,7 +158,7 @@ class in {
         }
       }
     }
-    $this->ci->stages->get('get', $gets, 'property', $tmp = array (), TRUE);
+    $this->ci->all->get('get', $gets, 'property', $tmp = array (), TRUE);
   }
 
   /**

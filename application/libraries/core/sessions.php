@@ -42,7 +42,7 @@ class sessions {
    */
   public function ready() {
     // Получаем массивы модулей
-    $this->arr = $this->ci->stages->get('session', array(), 'property');
+    $this->arr = $this->ci->all->get('session', array(), 'property');
     // Берем сохраненные массивы модулей
     if(($saved_data = $this->ci->session->userdata('saved_data'))) {
       // Обходим полученные массивы модули
@@ -57,7 +57,7 @@ class sessions {
     }
     // Сохраняем контрольную сумму для кеширования
     $this->arr_md5 = md5(serialize($saved_data));
-    $this->ci->stages->get('session', $this->arr, 'property');
+    $this->ci->all->get('session', $this->arr, 'property');
   }
 
   /**
@@ -66,7 +66,7 @@ class sessions {
    */
   public function end() {
     // Сохраняем значения сессии
-    $this->arr = $this->ci->stages->get('session', array(), 'property');
+    $this->arr = $this->ci->all->get('session', array(), 'property');
     $this->save();
   }
 
