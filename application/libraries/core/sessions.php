@@ -40,7 +40,7 @@ class sessions {
   /**
    * Загружаем данные сессии в свойство класса
    */
-  public function init() {
+  public function ready() {
     // Получаем массивы модулей
     $this->arr = $this->ci->stages->get('session', array(), 'property');
     // Берем сохраненные массивы модулей
