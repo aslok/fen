@@ -1,18 +1,18 @@
 <?php
 
 /**
- * Файл core/test
+ * Файл sections/main
  *
- * Файл-шаблон для тестирования кода
+ * Реализует загрузку модулей основной секции
  * @core
  */
 if(!defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Класс реализует тестовые функции
+ * Класс реализует загрузку модулей основной секции
  * @test
  */
-class test {
+class main {
   /** @var object CI_Controller Объект для доступа к ресурсам Codeigniter */
   private $ci;
 
@@ -22,13 +22,5 @@ class test {
    */
   public function __construct() {
     $this->ci = & get_instance();
-  }
-
-  /**
-   * Хук, который запускается на последнем этапе - done
-   * @return void
-   */
-  public function done() {
-    var_dump('<pre>', $this->ci->in->routes, $this->ci->sections->get);
   }
 }
