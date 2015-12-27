@@ -34,8 +34,11 @@ class mods {
   /** @var string Название стартового метода модулей ядра */
   private $init_method;
 
-  /** @var string Суффикс для названий выполненных методов */
-  private $done_suffix;
+  /** @var string Название основного метода модулей ядра */
+  private $main_method;
+
+  /** @var string Название метода выполняемого при загрузке модуля */
+  private $loaded_method;
 
   /**
    * Инициализация свойств класса
@@ -53,8 +56,9 @@ class mods {
     $this->arr = array();
     $this->loaded = array();
     $this->core_folder = 'core' . DIRECTORY_SEPARATOR;
-    $this->init_method = 'index';
-    $this->done_suffix = '_done';
+    $this->init_method = 'load_core';
+    $this->main_method = 'main_core';
+    $this->loaded_method = 'module_loaded';
   }
 
   /**
@@ -69,7 +73,7 @@ class mods {
     $this->get_modules_list();
     $this->loaded[] = get_class();
     $this->load_core_mods();
-    $this->all_run($this->init_method . $this->done_suffix);
+    $this->all_run($this->main_method);
   }
 
   /**
@@ -119,6 +123,7 @@ class mods {
       return FALSE;
     }
     $this->ci->load->library($this->arr[$module], NULL, $module);
+    $this->all_run($this->loaded_method, $module);
     if(!isset($this->ci->$module)) {
       show_error('Can not to load module ' . $module . ' from ' . $this->arr[$module]);
     }
@@ -132,9 +137,9 @@ class mods {
    * @param string $method Название метода для вызова
    * @return void
    */
-  private function all_run($method) {
+  private function all_run($method, $data = FALSE) {
     foreach($this->loaded as $module) {
-      $this->run($module, $method);
+      $this->run($module, $method, $data);
     }
   }
 
@@ -145,11 +150,15 @@ class mods {
    * @param string $method Название метода для вызова
    * @return bool|mixed Результат выполнения метода или FALSE если метода нет
    */
-  private function run($module, $method) {
+  private function run($module, $method, $data = FALSE) {
     if(in_array($module, $this->loaded) &&
-       !empty($method) &&
+       !empty ($method) &&
        method_exists($this->ci->$module, $method)){
-      return $this->ci->$module->$method();
+      if (!empty ($data)){
+        return $this->ci->$module->$method($data);
+      } else {
+        return $this->ci->$module->$method();
+      }
     }
     return NULL;
   }
@@ -202,6 +211,7 @@ class mods {
    * @return array Названия и пути к файлам модулей
    */
   private function mods_files_list($directory) {
+    $directory = $this->sort_directory($directory);
     $mods = array();
     foreach($directory as $dirname => $dir) {
       if(!is_array($dir)) {
@@ -241,6 +251,27 @@ class mods {
    */
   private function core_mods_filter($mod) {
     return 0 === strpos($mod, $this->core_folder);
+  }
+
+  /**
+   * Рекурсивно обходит каталоги, сортирует массив файлов
+   *
+   * @param array $directory Древовидный массив каталогов и файлов
+   * @return array Древовидный массив каталогов и файлов отсортированный по алфавиту
+   */
+  private function sort_directory($directory) {
+    $folders = array ();
+    $files = array ();
+    foreach($directory as $name => $item) {
+      if (is_array($item)){
+        $folders[$name] = $this->sort_directory($item);
+      }else{
+        $files[] = $item;
+      }
+    }
+    ksort($folders);
+    sort($files);
+    return array_merge($folders, $files);
   }
 
 }
