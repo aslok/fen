@@ -12,6 +12,7 @@ if(!defined('BASEPATH')) exit('No direct script access allowed');
  * Класс реализует базовую поддержку уровней выполнения
  *
  * Вызывает методы модулей по списку
+ ** core
  ** init
  ** ready
  ** check
@@ -41,8 +42,8 @@ class stages {
    * Запуск цикла уровней выполнения
    * @return void
    */
-  public function index_done() {
-    foreach(array('init', 'ready', 'check', 'main', 'done') as $method) {
+  public function main_core() {
+    foreach(array('core', 'init', 'ready', 'check', 'main', 'done') as $method) {
       $this->n = $method;
       $this->get($method);
     }
