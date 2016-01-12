@@ -53,112 +53,61 @@ class in {
    * Распределяем полученные GET параметры по модулям
    * @return void
    */
-  public function ready() {
+  public function core() {
     // Получаем GET параметры модулей и списки значений параметров
-    $modules_routes = $this->ci->all->get('route', array(), 'property');
-    // Получаем значения по-умолчанию
-    $modules_gets = $this->ci->all->get('get', array(), 'property');
-    // Обогощаем GET параметры модулей именами параметров указанных
-    // в массиве значений по-умолчанию
-    foreach ($modules_gets as $module => $module_section) {
-      if (!is_array($module_section)) {
-        continue;
-      }
-      foreach ($module_section as $section_name => $section_values) {
-        if (!isset ($modules_routes[$module][$section_name])) {
-          $modules_routes[$module][$section_name] = FALSE;
-        }
-      }
-    }
-    // Стек полученных GET параметров для распределения между модулями
-    $get_arr = $this->get_arr;
-    // Обходим массив-схему строки GET, $scheme_part - текущая секция для поиска
-    $scheme_length = count($this->scheme_arr);
-    $get_next = TRUE;
-    foreach ($this->scheme_arr as $scheme_part) {
-      $scheme_length--;
-      // Если нужно получить свежее значение для поиска
-      if ($get_next) {
-        // Если схемы не достаточно для распределения - в последней секции будут
-        // оставшиеся параметры в виде массива
-        if (empty ($scheme_length)) {
-          $tmp_arr = array ();
-          while (!is_null($get = array_shift($get_arr))) {
-            $tmp_arr[] = $get;
-          }
-          $get_arr = array ($tmp_arr);
-        }
-        // Если больше ничего не передано
-        if (is_null($get = array_shift($get_arr))) {
-          // Заканчиваем поиски
-          break;
-        }
-        $get_next = FALSE;
-      }
-      // Обходим секции полученные из свойств модулей
-      foreach ($modules_routes as $module => $route_section) {
-        if (!is_array($route_section)) {
+    $modules_routes = $this->ci->all->get_once('route', array(), 'property');
+    $modules_scheme = array ();
+    foreach ($modules_routes as $module => $sections_arr) {
+      foreach ($sections_arr as $section_name => $section_vals_arr) {
+        if (!is_array($section_vals_arr) ||
+            FALSE === ($section_key = array_search($section_name, $this->scheme_arr))) {
           continue;
         }
-        // Ищем текущую секцию среди секций модуля
-        foreach ($route_section as $section_name => $section_values) {
-          // Если найден модуль которому нужна текущая секция
-          if ($scheme_part == $section_name) {
-            // Если мы знаем варианты значения секции - проверяем
-            if (is_array($section_values) &&
-                FALSE === array_search($get, $section_values, TRUE)) {
-              continue;
-            }
-            // Сохраняем текущую секцию в массив параметров
-            if (!isset ($this->routes[$module])) {
-              $this->routes[$module] = array ();
-            }
-            $this->routes[$module][$section_name] = $get;
-            // Обходим секции полученные из свойств других модулей
-            foreach ($modules_routes as $other_module => $other_route_section) {
-              if ($module == $other_module ||
-                  !is_array($other_route_section)) {
-                continue;
-              }
-              // Ищем текущую секцию среди секций других модулей
-              foreach ($other_route_section as $other_section_name => $other_section_values) {
-                // Если найден другой модуль которому нужна текущая секция
-                if ($other_section_name == $section_name &&
-                    (!isset ($this->routes[$other_module]) ||
-                     !isset ($this->routes[$other_module][$section_name]))) {
-                  // Сохраняем текущую секцию в массив параметров другого модуля
-                  if (!isset ($this->routes[$other_module])) {
-                    $this->routes[$other_module] = array ();
-                  }
-                  $this->routes[$other_module][$section_name] = $get;
-                }
-              }
-            }
-            $get_next = TRUE;
-          }
-        }
+        $modules_scheme[$section_key] = '(' . implode('|', $section_vals_arr) . ')';
       }
     }
-    // Если невозможно найти назначение исходя из текущей схемы
-    if (!$get_next) {
-      show_error('Can not to make route to "' . $get . '"');
-    }
-    $gets = array_replace_recursive($modules_gets, $this->routes);
-    // Если GET параметер необходимый модулю небыл получен,
-    // но он присутствовал в схеме - присваиваем ему FALSE и передаем модулю
-    // Обходим секции полученные из свойств модулей
-    foreach ($modules_routes as $module => $route_section) {
-      if (!is_array($route_section)) {
+    foreach ($this->scheme_arr as $scheme_section_num => $scheme_section) {
+      if (isset ($modules_scheme[$scheme_section_num])) {
         continue;
       }
-      // Проверяем наличие текущей секции
-      foreach ($route_section as $section_name => $section_values) {
-        if (!isset ($gets[$module][$section_name])) {
-          $gets[$module][$section_name] = FALSE;
+      $modules_scheme[$scheme_section_num] = '([^/]*)';
+    }
+    ksort($modules_scheme);
+    $scheme = '~(' . implode('/)?(', $modules_scheme) . '/)?~';
+    preg_match($scheme, $this->ci->uri->uri_string() . '/', $matches);
+    foreach ($this->scheme_arr as $section_key => $section) {
+      $this->routes[$section] = isset ($matches[$section_key * 2 + 2]) ?
+                                  $matches[$section_key * 2 + 2] :
+                                  '';
+    }
+    $this->provide_get_params();
+  }
+
+  public function module_loaded($module) {
+    if (empty ($this->routes)) {
+      return FALSE;
+    }
+    $this->provide_get_params();
+    return TRUE;
+  }
+
+  private function provide_get_params() {
+    // Получаем значения по-умолчанию
+    $modules_gets = $this->ci->all->get_once('get', array(), 'property');
+    foreach ($modules_gets as $module => $sections_arr) {
+      foreach ($sections_arr as $section_name => $section_val) {
+        if (!isset ($this->routes[$section_name])) {
+          show_error('Can not to make route to "' . $section_name .
+                       '" for module ' . $module);
         }
+        if (empty ($this->routes[$section_name])) {
+          continue;
+        }
+        $modules_gets[$module][$section_name] = $this->routes[$section_name];
       }
     }
-    $this->ci->all->get('get', $gets, 'property', $tmp = array (), TRUE);
+    $this->ci->all->get_fav('get', $modules_gets, 'property');
+    return $modules_gets;
   }
 
   /**
