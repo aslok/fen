@@ -29,6 +29,6 @@ class test {
    * @return void
    */
   public function done() {
-    var_dump('<pre>', $this->ci->in->routes, $this->ci->sections->get);
+    var_dump('<pre>$this->ci->in->routes, $this->ci->sections->get', $this->ci->in->routes, $this->ci->sections->get);
   }
 }
