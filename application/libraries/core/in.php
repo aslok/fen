@@ -15,12 +15,14 @@ if(!defined('BASEPATH')) exit('No direct script access allowed');
  */
 class in {
 
-  /** @var array Массив полученных GET параметров */
+  /** @var array Массив полученных GET значений */
   public $get_arr;
   /** @var array Массив полученных POST параметров */
   public $post_arr;
-  /** @var array Массив распределенных параметров */
+  /** @var array Массив распределенных GET параметров */
   public $routes;
+  /** @var array Массив параметров распределенных по модулям */
+  public $modules_routes;
   /** @var string Строка-схема строки GET с названиями секций URI */
   public $scheme;
   /** @var array Массив с названиями секций URI */
@@ -45,6 +47,7 @@ class in {
     }
     $this->post_arr = array ();
     $this->routes = array ();
+    $this->modules_routes = array ();
     $this->scheme = 'lang/section/page/action/params';
     $this->scheme_arr = explode('/', $this->scheme);
   }
@@ -56,11 +59,11 @@ class in {
    */
   public function core() {
     // Получаем GET параметры модулей и списки значений параметров
-    $modules_routes = $this->ci->all->get_once('route', array(), 'property');
+    $this->modules_routes = $this->ci->all->get_once('route', array(), 'property');
     // Формируем массив возможных значений параметров
     $modules_scheme_arr = array ();
     // Обходим каждый модуль полученных списков значений параметров
-    foreach ($modules_routes as $module => $sections_arr) {
+    foreach ($this->modules_routes as $module => $sections_arr) {
       // Обходим каждый из полученных списков значений параметров
       foreach ($sections_arr as $section_name => $section_vals_arr) {
         // Если это не список или если его наименование отсутствует в схеме
@@ -137,12 +140,21 @@ class in {
           show_error('Can not to make route to "' . $section_name .
                        '" for module ' . $module);
         }
+        //var_dump('<pre>$this->modules_routes', $this->modules_routes);exit;
         // Если у нас нет данных для этой секции - пропускаем
         if (empty ($this->routes[$section_name])) {
           continue;
         }
-        // Сохраняем полученные GET параметры в элемент секции
-        $modules_gets[$module][$section_name] = $this->routes[$section_name];
+        // Если у нас данные не для этого модуля - сохраняем пустое значение
+        if (isset ($this->modules_routes[$module]) &&
+            isset ($this->modules_routes[$module][$section_name]) &&
+            FALSE === array_search($this->routes[$section_name],
+                                   $this->modules_routes[$module][$section_name])) {
+          $modules_gets[$module][$section_name] = '';
+        } else {
+          // Сохраняем полученные GET параметры в элемент секции
+          $modules_gets[$module][$section_name] = $this->routes[$section_name];
+        }
       }
     }
     // Передаем данные модулям
