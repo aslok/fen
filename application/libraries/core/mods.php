@@ -37,6 +37,9 @@ class mods {
   /** @var string Название основного метода модулей ядра */
   private $main_method;
 
+  /** @var string Название завершающего метода модулей ядра */
+  private $finish_method;
+
   /** @var string Название метода выполняемого при загрузке модуля */
   private $loaded_method;
 
@@ -56,8 +59,9 @@ class mods {
     $this->arr = array();
     $this->loaded = array();
     $this->core_folder = 'core' . DIRECTORY_SEPARATOR;
-    $this->init_method = 'load_core';
-    $this->main_method = 'main_core';
+    $this->init_method = 'mods_load';
+    $this->main_method = 'mods_main';
+    $this->finish_method = 'mods_done';
     $this->loaded_method = 'module_loaded';
   }
 
@@ -74,6 +78,7 @@ class mods {
     $this->loaded[] = get_class();
     $this->load_core_mods();
     $this->all_run($this->main_method);
+    $this->all_run($this->finish_method);
   }
 
   /**
@@ -123,11 +128,11 @@ class mods {
       return FALSE;
     }
     $this->ci->load->library($this->arr[$module], NULL, $module);
-    $this->all_run($this->loaded_method, $module);
     if(!isset($this->ci->$module)) {
       show_error('Can not to load module ' . $module . ' from ' . $this->arr[$module]);
     }
     $this->loaded[] = $module;
+    $this->all_run($this->loaded_method, $module);
     return FALSE !== $method ? $this->run($module, $method) : TRUE;
   }
 
