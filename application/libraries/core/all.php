@@ -20,12 +20,15 @@ class all {
   /** @var object CI_Controller Объект для доступа к ресурсам Codeigniter */
   private $ci;
 
+  public $getted_mods;
+
   /**
    * Инициализация свойств класса
    * @return object
    */
   public function __construct() {
     $this->ci = & get_instance();
+    $this->getted_mods = array ();
   }
 
   /**
@@ -80,7 +83,7 @@ class all {
   }
 
   /**
-   * Выполняет метод модулей (если он есть) и возвращает массив
+   * Выполняет метод модулей один раз (если он есть) и возвращает массив
    * возвращенных значений
    *
    * @param string $method Название метода для вызова
@@ -91,8 +94,44 @@ class all {
    * для которых переданы данные
    * @return array Массив ответов модулей на вызов данного метода
    */
+  public function get_once($method, $data = array(), $type = 'method',
+                           &$arr = array(), $fav = FALSE) {
+    return $this->get($method, $data, $type, $arr, $fav, TRUE);
+  }
+
+  /**
+   * Выполняет метод модулей (если он есть и ему переданы данные) и
+   * возвращает массив возвращенных значений
+   *
+   * @param string $method Название метода для вызова
+   * @param array $data Массив параметров передаваемых вызываемому методу
+   * @param string $type Два варианта значения method|property - метод или свойство
+   * @param array $arr Ссылка на массив для сохранения ответов вызванных методов
+   * @param bool $once Флаг обозначающий, что нужно вызвать методы модулей
+   * только по одному разу за все время выполнения
+   * @return array Массив ответов модулей на вызов данного метода
+   */
+  public function get_fav($method, $data = array(), $type = 'method',
+                           &$arr = array(), $once = FALSE) {
+    return $this->get($method, $data, $type, $arr, $once);
+  }
+
+  /**
+   * Выполняет метод модулей (если он есть) и возвращает массив
+   * возвращенных значений
+   *
+   * @param string $method Название метода для вызова
+   * @param array $data Массив параметров передаваемых вызываемому методу
+   * @param string $type Два варианта значения method|property - метод или свойство
+   * @param array $arr Ссылка на массив для сохранения ответов вызванных методов
+   * @param bool $fav Флаг обозначающий, что нужно вызвать только методы
+   * для которых переданы данные
+   * @param bool $once Флаг обозначающий, что нужно вызвать методы модулей
+   * только по одному разу за все время выполнения
+   * @return array Массив ответов модулей на вызов данного метода
+   */
   public function get($method, $data = array(), $type = 'method',
-                      &$arr = array(), $fav = FALSE) {
+                      &$arr = array(), $fav = FALSE, $once = FALSE) {
     // Массив модулей которые уже были вызваны
     $stage_done = array();
     // Номер текущего вызываемого модуля
@@ -137,6 +176,15 @@ class all {
           $cur_pos++;
           continue;
         }
+        // Если необходимо обойти только те модули, которые не обошли ранее
+        if($once &&
+           isset ($this->getted_mods[$module]) &&
+           isset ($this->getted_mods[$module][$method]) &&
+           isset ($this->getted_mods[$module][$method][$type])) {
+          // Если обошли ранее - переходим к следующему
+          $cur_pos++;
+          continue;
+        }
         // Есть два варианта - доступ к свойству и к методу
         switch($type) {
           // Свойство
@@ -150,6 +198,17 @@ class all {
               }else {
                 // Читаем данные из свойства и сохраняем в ответ
                 $arr[$module] = $this->ci->$module->$method;
+                if ($once) {
+                  if (!isset ($this->getted_mods[$module])) {
+                    $this->getted_mods[$module] = array ();
+                  }
+                  if (!isset ($this->getted_mods[$module][$method])) {
+                    $this->getted_mods[$module][$method] = array ();
+                  }
+                  if (!isset ($this->getted_mods[$module][$method][$type])) {
+                    $this->getted_mods[$module][$method][$type] = TRUE;
+                  }
+                }
               }
             }
             break;
@@ -168,6 +227,17 @@ class all {
                     $data['*'] :
                     // Иначе вызываем метод с параметром - пустым массивом
                     array()));
+              if ($once) {
+                if (!isset ($this->getted_mods[$module])) {
+                  $this->getted_mods[$module] = array ();
+                }
+                if (!isset ($this->getted_mods[$module][$method])) {
+                  $this->getted_mods[$module][$method] = array ();
+                }
+                if (!isset ($this->getted_mods[$module][$method][$type])) {
+                  $this->getted_mods[$module][$method][$type] = TRUE;
+                }
+              }
             }
             break;
           // В другом случае показываем ошибку
