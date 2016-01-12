@@ -56,15 +56,23 @@ class in {
   public function core() {
     // Получаем GET параметры модулей и списки значений параметров
     $modules_routes = $this->ci->all->get_once('route', array(), 'property');
-    $modules_scheme = array ();
+    $modules_scheme_arr = array ();
     foreach ($modules_routes as $module => $sections_arr) {
       foreach ($sections_arr as $section_name => $section_vals_arr) {
         if (!is_array($section_vals_arr) ||
             FALSE === ($section_key = array_search($section_name, $this->scheme_arr))) {
           continue;
         }
-        $modules_scheme[$section_key] = '(' . implode('|', $section_vals_arr) . ')';
+        if (!isset($modules_scheme_arr[$section_key])) {
+          $modules_scheme_arr[$section_key] = array ();
+        }
+        $modules_scheme_arr[$section_key] =
+          array_merge($modules_scheme_arr[$section_key], $section_vals_arr);
       }
+    }
+    $modules_scheme = array ();
+    foreach ($modules_scheme_arr as $section_key => $section_vals_arr) {
+      $modules_scheme[$section_key] = '(' . implode('|', $section_vals_arr) . ')';
     }
     foreach ($this->scheme_arr as $scheme_section_num => $scheme_section) {
       if (isset ($modules_scheme[$scheme_section_num])) {

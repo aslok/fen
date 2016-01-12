@@ -16,12 +16,14 @@ class test {
   /** @var object CI_Controller Объект для доступа к ресурсам Codeigniter */
   private $ci;
 
+  public $route;
   /**
    * Инициализация свойств класса
    * @return object
    */
   public function __construct() {
     $this->ci = & get_instance();
+    $this->route = array ('section' => array ('test'));
   }
 
   /**

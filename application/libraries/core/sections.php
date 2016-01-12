@@ -46,10 +46,10 @@ class sections {
              $module => $path) {
       if ($this->get['section'] == $module) {
         $this->ci->mods->load($module);
-        return;
+        return TRUE;
       }
     }
-    show_404();
+    return FALSE;
   }
 
   /**
