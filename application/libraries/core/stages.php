@@ -42,7 +42,7 @@ class stages {
    * Запуск цикла уровней выполнения
    * @return void
    */
-  public function main_core() {
+  public function mods_done() {
     foreach(array('core', 'init', 'ready', 'check', 'main', 'done') as $method) {
       $this->n = $method;
       $this->ci->all->get($method);
