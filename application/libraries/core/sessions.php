@@ -18,6 +18,8 @@ if(!defined('BASEPATH')) exit('No direct script access allowed');
  */
 class sessions {
 
+  /** @var array Массив с данными сессии */
+  public $data;
   /** @var array Массив с данными свойств session модулей */
   public $arr;
   /** @var string Хеш код сохраненных данных, для проверки,
@@ -34,30 +36,41 @@ class sessions {
   public function __construct() {
     $this->ci = & get_instance();
     $this->ci->load->library('session');
+    $this->data = array();
     $this->arr = array();
+  }
+
+  public function mods_main() {
+    $this->data = $this->ci->session->userdata('saved_data');
+    // Сохраняем контрольную сумму для кеширования
+    $this->arr_md5 = md5(serialize($this->data));
+    $this->provide_params();
+  }
+
+  public function init() {
+    $this->provide_params();
   }
 
   /**
    * Загружаем данные сессии в свойство класса
    */
-  public function ready() {
+  private function provide_params() {
     // Получаем массивы модулей
-    $this->arr = $this->ci->all->get('session', array(), 'property');
+    $arr = $this->ci->all->get_once('session', array(), 'property');
     // Берем сохраненные массивы модулей
-    if(($saved_data = $this->ci->session->userdata('saved_data'))) {
+    if(!empty ($this->data)) {
       // Обходим полученные массивы модули
-      foreach($this->arr as $data_key => &$data_val) {
+      foreach($arr as $data_key => &$data_val) {
         // Если нет сохранненного массива данного модуля - пропускаем его
-        if(!isset($saved_data[$data_key])) {
+        if(!isset($this->data[$data_key])) {
           continue;
         }
         // Заменяем массив модуля сохраненным
-        $data_val = $saved_data[$data_key];
+        $data_val = $this->data[$data_key];
       }
     }
-    // Сохраняем контрольную сумму для кеширования
-    $this->arr_md5 = md5(serialize($saved_data));
-    $this->ci->all->get('session', $this->arr, 'property');
+    $this->ci->all->get_fav('session', $arr, 'property');
+    $this->arr = array_merge($this->arr, $arr);
   }
 
   /**
