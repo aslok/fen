@@ -11,6 +11,11 @@ if(!defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * Класс реализует прием POST и GET запросов
  *
+ * Настройки рутинга контролируются свойством $this->scheme и
+ * свойствами route модулей подключенных на этапе "core".
+ * Разобранные параметры хранятся в свойстве $this->routes и
+ * автоматически заменяют соответствующие параметры других модулей
+ * в их свойствах get
  * @core
  */
 class in {
@@ -19,9 +24,9 @@ class in {
   public $get_arr;
   /** @var array Массив полученных POST параметров */
   public $post_arr;
-  /** @var array Массив распределенных GET параметров */
+  /** @var array Массив GET параметров */
   public $routes;
-  /** @var array Массив параметров распределенных по модулям */
+  /** @var array Массив GET параметров распределенных по модулям */
   public $modules_routes;
   /** @var string Строка-схема строки GET с названиями секций URI */
   public $scheme;
@@ -73,7 +78,7 @@ class in {
           continue;
         }
         // Создаем соответствующий массив, если его нет
-        if (!isset($modules_scheme_arr[$section_key])) {
+        if (!isset ($modules_scheme_arr[$section_key])) {
           $modules_scheme_arr[$section_key] = array ();
         }
         // Добавляем список в массив
@@ -140,7 +145,6 @@ class in {
           show_error('Can not to make route to "' . $section_name .
                        '" for module ' . $module);
         }
-        //var_dump('<pre>$this->modules_routes', $this->modules_routes);exit;
         // Если у нас нет данных для этой секции - пропускаем
         if (empty ($this->routes[$section_name])) {
           continue;
